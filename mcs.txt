@@ -1,0 +1,245 @@
+Define exe0.launcher()=
+Prgm
+ Local a
+ If str.citynm=0 Then
+   RequestStr "为你的新城市起名",str.citynm,0
+  num.money=500000
+  Text "已创建城市,初始资金500000KEL."
+ Else
+  Disp "正在准备资源..."
+EndIf
+Request "1.开始/2.删除城市/3.退出",a,0
+If a=1 Then
+  Disp "正在载入..."
+ElseIf a=2 Then
+  str.citynm=0
+  num.buldused=0
+  num.factsused=0
+  num.martused=0
+  num.ofceused=0
+  num.officebld=0
+  num.market=0
+  num.factory=0
+  num.buildings=0
+  num.cars=0
+  num.inlets=0
+  num.outlets=0
+  num.population=0
+  num.rawmtrl=0
+  num.streets=0
+  num.money=0
+  Disp "完成！"
+  Stop
+Else
+  Stop
+EndIf
+exe2.cities()
+EndPrgm
+
+Define exe2.cities()=
+Prgm
+©代码区.如没有把握,禁止修改.byAlex_Nute
+Local a,cls,amount,circle,delmont
+If str.citynm=0 Then
+  Disp "无存档."
+  Stop
+Else
+  Disp "开始运行."
+EndIf
+cls=0
+While cls≠1
+  Request "1.建造/2.拆除/3.其他/4.出售",a,0
+  If a=1 Then
+    Request "1.街道/2.建筑/3.返回",a,0
+    If a=1 Then
+      If num.money>60 Then
+        Request "1街道=60KEL,0=取消",amount,0
+        Disp "正在建造"
+        amount+num.streets→num.streets
+        num.money-60→num.money
+      Else
+        Text "资金不足"
+      EndIf
+    ElseIf a=2 Then
+      Request "1.民房/2.商业区/3.更多",a,0
+      If a=1 Then
+        Request "1民房=200KEL,0=取消",amount,0
+        If num.money>200 Then
+          num.streets-1→num.streets
+          num.buildings+1→num.buildings
+          num.money-200→num.money
+        Else
+          Text "资金不足"
+        EndIf
+      ElseIf a=2 Then
+        Request "1商业用房=150KEL,0=取消",amount,0
+        num.market+1→num.market
+        num.streets-1→num.streets
+        num.money-150→num.money
+      ElseIf a=3 Then
+        Request "1.工业房/2.写字楼/3.取消",a,0
+        If a=1 Then
+          Request "1工业房=220KEL,0=取消",amount,0
+          If num.money>220 Then
+            num.money-220→num.money
+            num.factory+1→num.factory
+            num.streets-2→num.streets
+          Else
+            Text "资金不足"
+          EndIf
+        ElseIf a=2 Then
+          Request "1写字楼=200KEL,0=取消",amount,0
+          If num.money>200 Then
+            num.streets-2→num.streets
+            num.officebld+1→num.officebld
+            num.money-200→num.money
+         Else
+           Text "资金不足"
+         EndIf
+        ElseIf a=3 Then
+          Disp " "
+        EndIf
+      ElseIf a=3 Then
+        Disp " "
+      EndIf
+    EndIf
+  ElseIf a=3 Then
+    Request "1.等待/2.查看城市信息/3.更多",a,0
+    If a=1 Then
+      For circle,1,10,1
+        If num.buildings=0 Then
+          Disp "没有建筑."
+          Exit
+        Else
+          PassErr
+        EndIf
+        If sts.goal=0 Then
+          If num.buldused=100 and num.factsused=100 and num.martused=100 and num.ofceused=100 and num.population=100 Then
+            sts.goal=1
+            Disp "达到目标,奖励5000000KEL"
+            num.money+5000000→num.money
+          Else
+            PassErr
+          EndIf
+        EndIf
+        If num.buildings≤num.buldused Then
+            num.buldused+1→num.buldused
+            num.population+2→num.population
+            num.money-2→num.money
+            num.rawmtrl-5→num.rawmtrl
+            num.cars+randInt(0,1)→num.cars
+        ElseIf num.population≥10 Then
+          If num.martused≥num.market Then
+            num.money+10→num.money
+            num.rawmtrl-5→num.rawmtrl
+            num.inlets+20→num.inlets
+            num.money-2→num.money
+          ElseIf num.factsused≥num.factory Then
+            num.money+10→num.money
+            num.inlets+25→num.inlets
+            num.outlets+10→num.outlets
+            num.money-5→num.money
+            num.rawmtrl+40→num.rawmtrl
+            num.rawmtrl-10→num.rawmtrl
+          ElseIf num.ofceused≥num.officebld Then
+            num.money+11→num.money
+            num.inlets+5→num.inlets
+            num.rawmtrl-2→num.rawmtrl
+            num.money-3→num.money
+          Else
+            Disp "无法使用功能建筑,使用数未达到."
+          EndIf
+        Else
+          Disp "没有足够人口"
+        EndIf
+        If num.rawmtrl≤5 Then
+          num.martused-1→num.martused
+        ElseIf num.rawmtrl≤2 Then
+          num.ofceused-1→num.ofceused
+        ElseIf num.rawmtrl≤10 Then
+          num.factsused-1→num.factsused
+        ElseIf num.rawmtrl≤5 Then
+          num.buldused-1→num.buldused
+        Else
+          Disp "无原料惩罚"
+        EndIf
+        If num.inlets≥20 Then
+          num.rawmtrl+40→num.rawmtr
+        ElseIf num.inlets>0 Then
+          num.rawmtrl+0→num.rawmtrl
+        EndIf
+      EndFor
+      Text "等待完成"
+    ElseIf a=2 Then
+      Disp "人口"
+      Disp num.population
+      Disp "建筑(民房,工厂,商业用房,写字楼)"
+      Disp num.buildings
+      Disp num.factory
+      Disp num.market
+      Disp num.officebld
+      Disp "金钱"
+      Disp num.money
+      Disp "街道"
+      Disp num.streets
+      Disp "进/出口量"
+      Disp num.inlets
+      Disp num.outlets
+      Disp "原材料数量"
+      Disp num.rawmtrl
+      Disp "城市名称"
+      Disp str.citynm
+    ElseIf a=3 Then
+      Request "1.原料购买/2.退出/3.返回",a,0
+      If a=1 Then
+        Request "20原料=200KEL",amount,0
+        If num.money>200 Then
+          num.rawmtrl+20→num.rawmtrl
+          num.money-200→num.money
+        Else
+          Disp "无法购买"
+        EndIf
+      ElseIf a=2 Then
+        Stop
+      ElseIf a=3 Then
+        Disp " "
+      EndIf
+    EndIf
+  ElseIf a=2 Then
+    Request "1.街道/2.建筑/3.返回",a,0
+    If a=1 Then
+      Request "删除多少街道？",delmont,0
+      num.streets-delmont→num.streets
+      Text "ok."
+    ElseIf a=2 Then
+      Request "1.工厂2.民房3.写字楼4.返回",a,0
+      If a=1 Then
+        Request "删除多少工厂？",delmont,0
+        num.factory-delmont→num.factory
+        num.factsused=0
+        Text "ok."
+      ElseIf a=2 Then
+        Request "删除多少民房？",delmont,0
+        num.buildings-delmont→num.buildings
+        num.buldused=0
+        Text "ok."
+      ElseIf a=3 Then
+        Request "删除多少写字楼？",delmont,0
+        num.officebld-delmont→num.ofceused
+        num.ofceused=0
+        Text "ok."
+      Else
+        Disp " "
+      EndIf
+    Else
+      Disp " "
+    EndIf
+  ElseIf a=4 Then
+    Request "出售数(20原料=200KEL)",amount,0
+    num.rawmtrl-20→num.rawmtrl
+    num.money+200→num.money
+  Else
+    Disp "未知命令,重新输入"
+  EndIf
+EndWhile
+EndPrgm
